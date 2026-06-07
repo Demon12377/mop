@@ -585,6 +585,11 @@ message ProgressMetrics {
 	StatWeightsResult final_weight_result = 7;
 }
 
+enum BulkSimMode {
+	BulkSimModeCombinations = 0;
+	BulkSimModeSingleItem = 1;
+}
+
 message BulkSettings {
 	repeated ItemSpec items = 1;
 	int32 iterations_per_combo = 2;
@@ -600,4 +605,9 @@ message BulkSettings {
 	int32 freeze_weapon_slot = 11;
 	repeated WeaponType freeze_mainhand_weapon_slots = 12;
 	repeated WeaponType freeze_offhand_weapon_slots = 13;
+
+	BulkSimMode mode = 14;
+	bool auto_gem = 15;
+	bool auto_reforge = 16;
+	bool auto_enchant = 17;
 }

@@ -1,0 +1,160 @@
+
+> mop@0.1.0 start
+> cross-env WATCH=1 make devmode
+
+/home/jules/go/bin/air
+protoc -I=./proto --go_out=./sim/core ./proto/*.proto
+proto/mage.proto:6:1: warning: Import common.proto is unused.
+mkdir -p binary_dist/mop
+touch binary_dist/mop/embedded
+cp sim/web/dist.go.tmpl binary_dist/dist.go
+Starting server compile now...
+go: downloading github.com/google/uuid v1.6.0
+go: downloading github.com/pkg/browser v0.0.0-20210911075715-681adbf594b8
+go: downloading google.golang.org/protobuf v1.36.10
+go: downloading golang.org/x/exp v0.0.0-20250305212735-054e65f0b394
+[1;32mBuild Completed Successfully[0m
+npx tsx vite.build-workers.mts & npx vite serve --host &
+air -tmp_dir "/tmp" -build.include_ext "go,proto" -build.args_bin "--usefs=true --launch=false --wasm=false" -build.bin "./wowsimmop" -build.cmd "make devserver" -build.exclude_dir "assets,dist,node_modules,ui,tools"
+
+  __    _   ___
+ / /\  | | | |_)
+/_/--\ |_| |_| \_ 1.65.3, built with Go 1.25.10
+
+watching .
+!exclude assets
+watching binary_dist
+watching binary_dist/mop
+watching cmd
+watching cmd/wowsimcli
+watching cmd/wowsimcli/cmd
+watching docs
+!exclude node_modules
+watching proto
+watching schemas
+watching sim
+watching sim/common
+watching sim/common/mop
+watching sim/common/shared
+watching sim/core
+watching sim/core/proto
+watching sim/core/simsignals
+watching sim/core/stats
+watching sim/death_knight
+watching sim/death_knight/blood
+watching sim/death_knight/frost
+watching sim/death_knight/unholy
+watching sim/druid
+watching sim/druid/balance
+watching sim/druid/feral
+watching sim/druid/guardian
+watching sim/druid/restoration
+watching sim/encounters
+watching sim/encounters/bwd
+watching sim/encounters/default_ai
+watching sim/encounters/dragonsoul
+watching sim/encounters/firelands
+watching sim/encounters/hof
+watching sim/encounters/msv
+watching sim/encounters/soo
+watching sim/encounters/toes
+watching sim/encounters/tot
+watching sim/hunter
+watching sim/hunter/beast_mastery
+watching sim/hunter/marksmanship
+watching sim/hunter/survival
+watching sim/lib
+watching sim/mage
+watching sim/mage/arcane
+watching sim/mage/fire
+watching sim/mage/frost
+watching sim/monk
+watching sim/monk/brewmaster
+watching sim/monk/mistweaver
+watching sim/monk/windwalker
+watching sim/paladin
+watching sim/paladin/holy
+watching sim/paladin/protection
+watching sim/paladin/retribution
+watching sim/priest
+watching sim/priest/discipline
+watching sim/priest/holy
+watching sim/priest/shadow
+watching sim/rogue
+watching sim/rogue/assassination
+watching sim/rogue/combat
+watching sim/rogue/subtlety
+watching sim/shaman
+watching sim/shaman/elemental
+watching sim/shaman/enhancement
+watching sim/shaman/restoration
+watching sim/warlock
+watching sim/warlock/affliction
+watching sim/warlock/demonology
+watching sim/warlock/destruction
+watching sim/warrior
+watching sim/warrior/arms
+watching sim/warrior/fury
+watching sim/warrior/protection
+watching sim/wasm
+watching sim/web
+!exclude tools
+!exclude ui
+building...
+make[1]: Entering directory '/app'
+Starting server compile now...
+[1;32mBuild Completed Successfully[0m
+make[1]: Leaving directory '/app'
+running...
+/bin/sh: 1: /app/tmp/main: not found
+Process Exit with Code: 127
+npm warn exec The following package was not found and will be installed: tsx@4.22.4
+
+  VITE v7.1.9  ready in 1586 ms
+
+  ➜  Local:   http://localhost:5173/mop/
+  ➜  Network: http://192.168.0.2:5173/mop/
+Failed to copy highs.wasm: Error: ENOENT: no such file or directory, copyfile '/app/ui/worker/highs.wasm' -> '/app/dist/mop/highs.wasm'
+    at async Object.copyFile (node:internal/fs/promises:618:10)
+    at async buildWorkers (/app/vite.build-workers.mts:47:3) {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'copyfile',
+  path: '/app/ui/worker/highs.wasm',
+  dest: '/app/dist/mop/highs.wasm'
+}
+vite v7.1.9 building for production...
+vite v7.1.9 building for production...
+vite v7.1.9 building for production...
+vite v7.1.9 building for production...
+transforming...
+transforming...
+transforming...
+transforming...
+✓ 2 modules transformed.
+✓ 3 modules transformed.
+rendering chunks...
+!exclude dist
+rendering chunks...
+✓ 4 modules transformed.
+✓ 4 modules transformed.
+computing gzip size...
+rendering chunks...
+../dist/mop/sim_worker.js  20.27 kB │ gzip: 4.60 kB
+✓ built in 1.63s
+computing gzip size...
+rendering chunks...
+computing gzip size...
+../dist/mop/reforge_worker.js   8.07 kB │ gzip:  2.31 kB
+../dist/mop/highs-DjLgcAeW.js  46.95 kB │ gzip: 12.42 kB
+✓ built in 1.64s
+computing gzip size...
+../dist/mop/local_worker.js  3.00 kB │ gzip: 1.11 kB
+✓ built in 1.64s
+../dist/mop/net_worker.js  2.98 kB │ gzip: 1.09 kB
+✓ built in 1.64s
+
+[TypeScript] Found 0 errors. Watching for file changes.
+make: *** [makefile:307: devmode] Terminated
+cleaning...
+see you again~
