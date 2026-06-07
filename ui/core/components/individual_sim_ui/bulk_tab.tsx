@@ -6,7 +6,7 @@ import { ref } from 'tsx-vanilla';
 import { REPO_RELEASES_URL } from '../../constants/other';
 import { IndividualSimUI } from '../../individual_sim_ui';
 import i18n from '../../../i18n/config';
-import { BulkSettings, DistributionMetrics, ProgressMetrics, RaidSimResult } from '../../proto/api';
+import { BulkSettings, BulkSimMode, DistributionMetrics, ProgressMetrics, RaidSimResult } from '../../proto/api';
 import { Class, GemColor, HandType, ItemRandomSuffix, ItemSlot, ItemSpec, RangedWeaponType, ReforgeStat, Spec, WeaponType } from '../../proto/common';
 import { ItemEffectRandPropPoints, SimDatabase, SimEnchant, SimGem, SimItem } from '../../proto/db';
 import { UIEnchant, UIGem, UIItem } from '../../proto/ui';
@@ -86,6 +86,11 @@ export class BulkTab extends SimTab {
 	protected bulkSimAbortController: AbortController | null = null;
 
 	inheritUpgrades: boolean;
+	autoGem: boolean;
+	autoReforge: boolean;
+	autoEnchant: boolean;
+	mode: BulkSimMode;
+
 	frozenItems: Map<BulkSimItemSlot, EquippedItem | null> = new Map([
 		[BulkSimItemSlot.ItemSlotFinger, null],
 		[BulkSimItemSlot.ItemSlotTrinket, null],
@@ -204,6 +209,11 @@ export class BulkTab extends SimTab {
 		});
 
 		this.inheritUpgrades = true;
+		this.autoGem = false;
+		this.autoReforge = false;
+		this.autoEnchant = false;
+		this.mode = BulkSimMode.BulkSimModeCombinations;
+
 		this.fallbackGems = Array.from({ length: 5 }, () => UIGem.create());
 		this.gemIconElements = [];
 
@@ -270,6 +280,11 @@ export class BulkTab extends SimTab {
 
 			this.addItems(settings.items, true);
 			this.setInheritUpgrades(settings.inheritUpgrades);
+			this.autoGem = settings.autoGem;
+			this.autoReforge = settings.autoReforge;
+			this.autoEnchant = settings.autoEnchant;
+			this.mode = settings.mode;
+
 			this.setFrozenItem(BulkSimItemSlot.ItemSlotFinger, this.getEquippedItemForFrozenSlot(BulkSimItemSlot.ItemSlotFinger, settings.freezeRingSlot));
 			this.setFrozenItem(BulkSimItemSlot.ItemSlotTrinket, this.getEquippedItemForFrozenSlot(BulkSimItemSlot.ItemSlotTrinket, settings.freezeTrinketSlot));
 			this.setFrozenWeaponSlot(settings.freezeWeaponSlot);
@@ -306,6 +321,10 @@ export class BulkTab extends SimTab {
 		return BulkSettings.create({
 			items: this.getItems(),
 			inheritUpgrades: this.inheritUpgrades,
+			autoGem: this.autoGem,
+			autoReforge: this.autoReforge,
+			autoEnchant: this.autoEnchant,
+			mode: this.mode,
 			defaultRedGem: this.fallbackGems[0].id,
 			defaultYellowGem: this.fallbackGems[1].id,
 			defaultBlueGem: this.fallbackGems[2].id,
@@ -434,7 +453,8 @@ export class BulkTab extends SimTab {
 
 	removeItem(item: ItemSpec) {
 		for (let idx = 0; idx < this.items.length; idx++) {
-			if (this.items[idx] && ItemSpec.equals(this.items[idx]!, item)) {
+			const existing = this.items[idx];
+			if (existing && existing.id === item.id && existing.randomSuffix === item.randomSuffix) {
 				this.removeItemByIndex(idx);
 				return;
 			}
@@ -477,7 +497,7 @@ export class BulkTab extends SimTab {
 	}
 
 	hasItem(item: ItemSpec) {
-		return this.items.some(i => !!i && ItemSpec.equals(i, item));
+		return this.items.some(i => !!i && i.id === item.id && i.randomSuffix === item.randomSuffix);
 	}
 
 	getItems(): Array<ItemSpec> {
@@ -671,6 +691,12 @@ export class BulkTab extends SimTab {
 
 	protected calculateBulkCombinations() {
 		try {
+			if (this.mode === BulkSimMode.BulkSimModeSingleItem) {
+				this.combinations = this.items.filter(i => !!i).length;
+				this.iterations = this.simUI.sim.getIterations() * this.combinations;
+				return;
+			}
+
 			let numCombinations: number = this.getAllWeaponCombos().length;
 
 			for (const [bulkItemSlot, pickerGroup] of this.pickerGroups.entries()) {
@@ -912,6 +938,10 @@ export class BulkTab extends SimTab {
 	protected buildBatchSettings() {
 		this.bulkSimButton.addEventListener('click', () => this.runBatchSim());
 
+		const modeDiv = ref<HTMLDivElement>();
+		const autoGemDiv = ref<HTMLDivElement>();
+		const autoReforgeDiv = ref<HTMLDivElement>();
+		const autoEnchantDiv = ref<HTMLDivElement>();
 		const socketsContainerRef = ref<HTMLDivElement>();
 		const inheritUpgradesDiv = ref<HTMLDivElement>();
 		const frozenRingDiv = ref<HTMLDivElement>();
@@ -922,6 +952,10 @@ export class BulkTab extends SimTab {
 
 		this.settingsContainer.appendChild(
 			<>
+				<div ref={modeDiv}></div>
+				<div ref={autoGemDiv}></div>
+				<div ref={autoReforgeDiv}></div>
+				<div ref={autoEnchantDiv}></div>
 				<div className="fallback-gem-container">
 					<h6>{i18n.t('bulk_tab.settings.fallback_gems')}</h6>
 					<div ref={socketsContainerRef} className="sockets-container"></div>
@@ -938,6 +972,64 @@ export class BulkTab extends SimTab {
 				)}
 			</>,
 		);
+
+		if (modeDiv.value)
+			new EnumPicker<BulkTab>(modeDiv.value, this, {
+				id: 'bulk-mode',
+				label: i18n.t('bulk_tab.settings.mode.label'),
+				values: [
+					{ name: i18n.t('bulk_tab.settings.mode.combinations'), value: BulkSimMode.BulkSimModeCombinations },
+					{ name: i18n.t('bulk_tab.settings.mode.single_item'), value: BulkSimMode.BulkSimModeSingleItem },
+				],
+				changedEvent: _modObj => this.settingsChangedEmitter,
+				getValue: _modObj => this.mode,
+				setValue: (eventID, _modObj, newValue) => {
+					this.mode = newValue;
+					this.settingsChangedEmitter.emit(eventID);
+				},
+			});
+
+		if (autoGemDiv.value)
+			new BooleanPicker<BulkTab>(autoGemDiv.value, this, {
+				id: 'bulk-auto-gem',
+				label: i18n.t('bulk_tab.settings.auto_gem.label'),
+				labelTooltip: i18n.t('bulk_tab.settings.auto_gem.tooltip'),
+				inline: true,
+				changedEvent: _modObj => this.settingsChangedEmitter,
+				getValue: _modObj => this.autoGem,
+				setValue: (eventID, _modObj, newValue) => {
+					this.autoGem = newValue;
+					this.settingsChangedEmitter.emit(eventID);
+				},
+			});
+
+		if (autoReforgeDiv.value)
+			new BooleanPicker<BulkTab>(autoReforgeDiv.value, this, {
+				id: 'bulk-auto-reforge',
+				label: i18n.t('bulk_tab.settings.auto_reforge.label'),
+				labelTooltip: i18n.t('bulk_tab.settings.auto_reforge.tooltip'),
+				inline: true,
+				changedEvent: _modObj => this.settingsChangedEmitter,
+				getValue: _modObj => this.autoReforge,
+				setValue: (eventID, _modObj, newValue) => {
+					this.autoReforge = newValue;
+					this.settingsChangedEmitter.emit(eventID);
+				},
+			});
+
+		if (autoEnchantDiv.value)
+			new BooleanPicker<BulkTab>(autoEnchantDiv.value, this, {
+				id: 'bulk-auto-enchant',
+				label: i18n.t('bulk_tab.settings.auto_enchant.label'),
+				labelTooltip: i18n.t('bulk_tab.settings.auto_enchant.tooltip'),
+				inline: true,
+				changedEvent: _modObj => this.settingsChangedEmitter,
+				getValue: _modObj => this.autoEnchant,
+				setValue: (eventID, _modObj, newValue) => {
+					this.autoEnchant = newValue;
+					this.settingsChangedEmitter.emit(eventID);
+				},
+			});
 
 		if (inheritUpgradesDiv.value)
 			new BooleanPicker<BulkTab>(inheritUpgradesDiv.value, this, {
@@ -1254,8 +1346,24 @@ export class BulkTab extends SimTab {
 
 			const allItemCombos: Map<ItemSlot, EquippedItem>[] = [];
 
-			for (let comboIdx = 0; comboIdx < this.combinations; comboIdx++) {
-				allItemCombos.push(this.getItemsForCombo(comboIdx));
+			if (this.mode === BulkSimMode.BulkSimModeSingleItem) {
+				const activeItems = this.items
+					.map((item, index) => ({ item, index }))
+					.filter(obj => !!obj.item) as { item: ItemSpec; index: number }[];
+
+				for (const { item, index } of activeItems) {
+					const equippedItem = this.simUI.sim.db.lookupItemSpec(item)!;
+					const slots = getEligibleItemSlots(equippedItem.item, this.playerIsFuryWarrior);
+					const combo = new Map<ItemSlot, EquippedItem>();
+					// For single item mode, we just pick the first eligible slot.
+					// This might need more complex logic for rings/trinkets if we want to compare against both slots.
+					combo.set(slots[0], equippedItem);
+					allItemCombos.push(combo);
+				}
+			} else {
+				for (let comboIdx = 0; comboIdx < this.combinations; comboIdx++) {
+					allItemCombos.push(this.getItemsForCombo(comboIdx));
+				}
 			}
 
 			const defaultGemsByColor = new Map<GemColor, UIGem | null>();
@@ -1270,7 +1378,7 @@ export class BulkTab extends SimTab {
 				defaultGemsByColor.set(color, this.simUI.sim.db.lookupGem(this.fallbackGems[colorIdx].id));
 			}
 
-			for (let comboIdx = 0; comboIdx < this.combinations; comboIdx++) {
+			for (let comboIdx = 0; comboIdx < allItemCombos.length; comboIdx++) {
 				this.throwIfBulkAborted(abortSignal);
 
 				let reforgeGear = this.originalGear;
@@ -1288,11 +1396,17 @@ export class BulkTab extends SimTab {
 						updatedItem = updatedItem.withUpgrade(equippedItem._upgrade);
 					}
 
+					if (this.autoEnchant && equippedItemInSlot?.enchant) {
+						updatedItem = updatedItem.withEnchant(equippedItemInSlot.enchant);
+					}
+
 					reforgeGear = reforgeGear.withEquippedItem(itemSlot, updatedItem, this.playerIsFuryWarrior);
 
-					for (const [socketIdx, socketColor] of equippedItem.curSocketColors(hasBlacksmithing).entries()) {
-						if (defaultGemsByColor.get(socketColor)) {
-							reforgeGear = reforgeGear.withGem(itemSlot, socketIdx, defaultGemsByColor.get(socketColor)!);
+					if (this.autoGem) {
+						for (const [socketIdx, socketColor] of updatedItem.curSocketColors(hasBlacksmithing).entries()) {
+							if (defaultGemsByColor.get(socketColor)) {
+								reforgeGear = reforgeGear.withGem(itemSlot, socketIdx, defaultGemsByColor.get(socketColor)!);
+							}
 						}
 					}
 				}
@@ -1304,11 +1418,14 @@ export class BulkTab extends SimTab {
 			this.setReforgeProgress(completedReforges, candidateGearSets.length);
 			await sleep(400);
 			const reforgeTasks = candidateGearSets.map(reforgeGear => async () => {
-				const reforgedGear = await this.optimizeReforges(reforgeGear, playerPhase, abortSignal);
+				let resultGear = reforgeGear;
+				if (this.autoReforge) {
+					resultGear = (await this.optimizeReforges(reforgeGear, playerPhase, abortSignal)) || reforgeGear;
+				}
 				this.throwIfBulkAborted(abortSignal);
 				completedReforges += 1;
 				this.setReforgeProgress(completedReforges, candidateGearSets.length);
-				return reforgedGear;
+				return resultGear;
 			});
 			const reforgeSettledResults = await promisePool(reforgeTasks, {
 				concurrency,
@@ -1318,7 +1435,7 @@ export class BulkTab extends SimTab {
 				throw rejectedReforge.reason;
 			}
 			const reforgeResults = reforgeSettledResults
-				.filter((result): result is PromiseFulfilledResult<Gear | null> => result.status === 'fulfilled')
+				.filter((result): result is PromiseFulfilledResult<Gear> => result.status === 'fulfilled')
 				.map(result => result.value);
 
 			reforgedGearSets.push(...reforgeResults.filter((gear): gear is Gear => !!gear));

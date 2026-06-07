@@ -1,0 +1,102 @@
+
+> mop@0.1.0 build
+> make host
+
+mkdir -p dist/mop/assets/db_inputs
+cp assets/db_inputs/atlasloot_db.json dist/mop/assets/db_inputs/atlasloot_db.json
+rm -rf dist/mop/assets/db_inputs
+mkdir -p dist/mop/assets/db_inputs/basestats
+cp assets/db_inputs/basestats/chancetomeleecrit.txt dist/mop/assets/db_inputs/basestats/chancetomeleecrit.txt
+rm -rf dist/mop/assets/db_inputs
+mkdir -p dist/mop/assets/db_inputs/basestats
+cp assets/db_inputs/basestats/chancetomeleecritbase.txt dist/mop/assets/db_inputs/basestats/chancetomeleecritbase.txt
+rm -rf dist/mop/assets/db_inputs
+mkdir -p dist/mop/assets/db_inputs/basestats
+cp assets/db_inputs/basestats/SpellScaling.txt dist/mop/assets/db_inputs/basestats/SpellScaling.txt
+rm -rf dist/mop/assets/db_inputs
+mkdir -p dist/mop/assets/db_inputs/basestats
+cp assets/db_inputs/basestats/combatratings.txt dist/mop/assets/db_inputs/basestats/combatratings.txt
+rm -rf dist/mop/assets/db_inputs
+mkdir -p dist/mop/assets/db_inputs/basestats
+cp assets/db_inputs/basestats/chancetospellcritbase.txt dist/mop/assets/db_inputs/basestats/chancetospellcritbase.txt
+rm -rf dist/mop/assets/db_inputs
+mkdir -p dist/mop/assets/db_inputs/basestats
+cp assets/db_inputs/basestats/OCTBaseHPByClass.txt dist/mop/assets/db_inputs/basestats/OCTBaseHPByClass.txt
+rm -rf dist/mop/assets/db_inputs
+mkdir -p dist/mop/assets/db_inputs/basestats
+cp assets/db_inputs/basestats/octbasempbyclass.txt dist/mop/assets/db_inputs/basestats/octbasempbyclass.txt
+rm -rf dist/mop/assets/db_inputs
+mkdir -p dist/mop/assets/db_inputs/basestats
+cp assets/db_inputs/basestats/chancetospellcrit.txt dist/mop/assets/db_inputs/basestats/chancetospellcrit.txt
+rm -rf dist/mop/assets/db_inputs
+mkdir -p dist/mop/assets/db_inputs
+cp assets/db_inputs/wowhead_reforge_stats.json dist/mop/assets/db_inputs/wowhead_reforge_stats.json
+rm -rf dist/mop/assets/db_inputs
+mkdir -p dist/mop/assets/db_inputs
+cp assets/db_inputs/RandPropPoints.json dist/mop/assets/db_inputs/RandPropPoints.json
+rm -rf dist/mop/assets/db_inputs
+make: Circular ui/core/index.ts <- ui/core/index.ts dependency dropped.
+touch dist/mop/.dirstamp
+# Intentionally serve one level up, so the local site has 'mop' as the first
+# directory just like github pages.
+npx http-server dist/mop/..
+Starting up http-server, serving dist/mop/..
+
+http-server version: 14.1.1
+
+http-server settings:
+CORS: disabled
+Cache: 3600 seconds
+Connection Timeout: 120 seconds
+Directory Listings: visible
+AutoIndex: visible
+Serve GZIP Files: false
+Serve Brotli Files: false
+Default File Extension: none
+
+Available on:
+  http://127.0.0.1:8080
+  http://192.168.0.2:8080
+Hit CTRL-C to stop the server
+
+[2026-06-07T12:16:24.634Z]  "HEAD /mop/druid/balance/index.html" "curl/8.5.0"
+(node:174321) [DEP0066] DeprecationWarning: OutgoingMessage.prototype._headers is deprecated
+(Use `node --trace-deprecation ...` to show where the warning was created)
+[2026-06-07T12:16:51.737Z]  "GET /mop/druid/balance/index.html" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-07T12:16:51.749Z]  "GET /mop/assets/database/db.json" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-07T12:16:51.768Z]  "GET /mop/bundle/ui/druid/balance/index.html-DdjeBrDG.entry.js" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-07T12:16:51.769Z]  "GET /mop/bundle/localization-DET0gFex.chunk.js" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-07T12:16:51.776Z]  "GET /mop/bundle/preset_utils-Ct6eQQq5.style.css" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-07T12:16:51.778Z]  "GET /mop/bundle/inputs-pTjqt04U.chunk.js" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-07T12:16:51.778Z]  "GET /mop/bundle/index-BNXzhFQP.style.css" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-07T12:16:51.797Z]  "GET /mop/bundle/preset_utils-CjzF3ZqU.chunk.js" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-07T12:16:51.816Z]  "GET /mop/bundle/sim-Bui__920.chunk.js" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-07T12:16:52.208Z]  "GET /mop/sim_worker.js" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-07T12:16:52.215Z]  "GET /version" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-07T12:16:52.217Z]  "GET /version" Error (404): "Not found"
+[2026-06-07T12:16:52.289Z]  "GET /mop/assets/img/balance_druid_background.jpg" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-07T12:16:52.293Z]  "GET /mop/assets/item_slots/head.jpg" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-07T12:16:52.294Z]  "GET /mop/assets/item_slots/neck.jpg" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-07T12:16:52.294Z]  "GET /mop/assets/item_slots/shoulders.jpg" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-07T12:16:52.295Z]  "GET /mop/assets/item_slots/chest.jpg" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-07T12:16:52.297Z]  "GET /mop/assets/item_slots/wrists.jpg" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-07T12:16:52.302Z]  "GET /mop/assets/item_slots/mainhand.jpg" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-07T12:16:52.303Z]  "GET /mop/assets/item_slots/offhand.jpg" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-07T12:16:52.303Z]  "GET /mop/assets/item_slots/hands.jpg" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-07T12:16:52.303Z]  "GET /mop/assets/item_slots/waist.jpg" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-07T12:16:52.304Z]  "GET /mop/assets/item_slots/legs.jpg" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-07T12:16:52.304Z]  "GET /mop/assets/item_slots/feet.jpg" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-07T12:16:52.312Z]  "GET /mop/assets/item_slots/finger.jpg" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-07T12:16:52.313Z]  "GET /mop/assets/item_slots/trinket.jpg" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-07T12:16:52.429Z]  "GET /mop/reforge_worker.js" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-07T12:16:52.517Z]  "GET /mop/assets/fonts/PlusJakartaSans-Regular.woff2" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-07T12:16:52.518Z]  "GET /mop/assets/fonts/PlusJakartaSans-Bold.woff2" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-07T12:16:52.741Z]  "GET /mop/lib.wasm" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-07T12:16:53.411Z]  "GET /mop/assets/enchants/descriptions.json" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-07T12:16:54.896Z]  "GET /mop/highs-DjLgcAeW.js" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-07T12:16:54.913Z]  "GET /mop/highs.wasm" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-07T12:16:54.980Z]  "GET /mop/lib.wasm" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-07T12:20:41.140Z]  "GET /mop/balance_druid/" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-07T12:20:41.141Z]  "GET /mop/balance_druid/" Error (404): "Not found"
+[2026-06-07T12:21:41.172Z]  "GET /mop/balance_druid/" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36"
+[2026-06-07T12:21:41.173Z]  "GET /mop/balance_druid/" Error (404): "Not found"

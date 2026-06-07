@@ -804,6 +804,23 @@
 			"combination_singular": "1 Combination",
 			"iterations": "Iterations",
 			"fallback_gems": "Fallback Gems",
+			"mode": {
+				"label": "Batch Mode",
+				"combinations": "Combinations",
+				"single_item": "Single Item"
+			},
+			"auto_gem": {
+				"label": "Auto Gem",
+				"tooltip": "Automatically socket items with fallback gems."
+			},
+			"auto_reforge": {
+				"label": "Auto Reforge",
+				"tooltip": "Automatically optimize reforges for each combination."
+			},
+			"auto_enchant": {
+				"label": "Auto Enchant",
+				"tooltip": "Automatically apply enchants from current gear to batch items."
+			},
 			"inherit_upgrades": {
 				"label": "Inherit Upgrades",
 				"tooltip": "When enabled, items will inherit upgrades from the equipped item. Otherwise, items will be simmed without any upgrades."
