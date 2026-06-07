@@ -692,7 +692,15 @@ export class BulkTab extends SimTab {
 	protected calculateBulkCombinations() {
 		try {
 			if (this.mode === BulkSimMode.BulkSimModeSingleItem) {
-				this.combinations = this.items.filter(i => !!i).length;
+				this.combinations = this.items
+					.filter(i => !!i)
+					.reduce((acc, itemSpec) => {
+						const item = this.simUI.sim.db.lookupItemSpec(itemSpec!);
+						if (item) {
+							return acc + getEligibleItemSlots(item.item, this.playerIsFuryWarrior).length;
+						}
+						return acc;
+					}, 0);
 				this.iterations = this.simUI.sim.getIterations() * this.combinations;
 				return;
 			}
@@ -1322,7 +1330,10 @@ export class BulkTab extends SimTab {
 
 		this.isRunning = true;
 		this.isCancelling = false;
-		const concurrency = (await this.simUI.sim.shouldUseWasmConcurrency()) ? this.simUI.sim.getWasmConcurrency() : navigator.hardwareConcurrency || 4;
+		const concurrency = Math.min(
+			(await this.simUI.sim.shouldUseWasmConcurrency()) ? this.simUI.sim.getWasmConcurrency() : navigator.hardwareConcurrency || 4,
+			8, // Cap concurrency for bulk reforges to avoid over-saturating workers
+		);
 		this.bulkSimAbortController = new AbortController();
 		const abortSignal = this.bulkSimAbortController.signal;
 		this.bulkSimButton.disabled = true;
@@ -1354,11 +1365,11 @@ export class BulkTab extends SimTab {
 				for (const { item, index } of activeItems) {
 					const equippedItem = this.simUI.sim.db.lookupItemSpec(item)!;
 					const slots = getEligibleItemSlots(equippedItem.item, this.playerIsFuryWarrior);
-					const combo = new Map<ItemSlot, EquippedItem>();
-					// For single item mode, we just pick the first eligible slot.
-					// This might need more complex logic for rings/trinkets if we want to compare against both slots.
-					combo.set(slots[0], equippedItem);
-					allItemCombos.push(combo);
+					for (const slot of slots) {
+						const combo = new Map<ItemSlot, EquippedItem>();
+						combo.set(slot, equippedItem);
+						allItemCombos.push(combo);
+					}
 				}
 			} else {
 				for (let comboIdx = 0; comboIdx < this.combinations; comboIdx++) {
@@ -1401,14 +1412,6 @@ export class BulkTab extends SimTab {
 					}
 
 					reforgeGear = reforgeGear.withEquippedItem(itemSlot, updatedItem, this.playerIsFuryWarrior);
-
-					if (this.autoGem) {
-						for (const [socketIdx, socketColor] of updatedItem.curSocketColors(hasBlacksmithing).entries()) {
-							if (defaultGemsByColor.get(socketColor)) {
-								reforgeGear = reforgeGear.withGem(itemSlot, socketIdx, defaultGemsByColor.get(socketColor)!);
-							}
-						}
-					}
 				}
 
 				candidateGearSets.push(reforgeGear);
@@ -1419,7 +1422,7 @@ export class BulkTab extends SimTab {
 			await sleep(400);
 			const reforgeTasks = candidateGearSets.map(reforgeGear => async () => {
 				let resultGear = reforgeGear;
-				if (this.autoReforge) {
+				if (this.autoReforge || this.autoGem) {
 					resultGear = (await this.optimizeReforges(reforgeGear, playerPhase, abortSignal)) || reforgeGear;
 				}
 				this.throwIfBulkAborted(abortSignal);
@@ -1445,6 +1448,8 @@ export class BulkTab extends SimTab {
 			const result = await this.runWithBulkAbort(this.runSingleGearSim(this.originalGear, 1, totalSimRounds), abortSignal);
 			const referenceDpsMetrics = result!.raidMetrics!.dps!;
 
+			const resultsLimit = this.mode === BulkSimMode.BulkSimModeSingleItem ? 1000 : 10;
+
 			for (let comboIdx = 0; comboIdx < reforgedGearSets.length; comboIdx++) {
 				this.throwIfBulkAborted(abortSignal);
 
@@ -1463,7 +1468,7 @@ export class BulkTab extends SimTab {
 				}
 
 				topGearResults.sort((a, b) => b.dpsMetrics.avg - a.dpsMetrics.avg);
-				if (topGearResults.length > 5) topGearResults.pop();
+				if (topGearResults.length > resultsLimit) topGearResults.pop();
 			}
 
 			this.topGearResults = topGearResults;
@@ -1519,7 +1524,7 @@ export class BulkTab extends SimTab {
 
 		this.throwIfBulkAborted(signal);
 
-		this.simUI.reforger.setIncludeGems(TypedEvent.nextEventID(), true);
+		this.simUI.reforger.setIncludeGems(TypedEvent.nextEventID(), this.autoGem);
 		this.simUI.reforger.setIncludeEOTBPGemSocket(TypedEvent.nextEventID(), playerPhase);
 		this.updateRelativeStatCapReforges();
 
