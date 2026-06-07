@@ -58,7 +58,12 @@ export default class BulkSimResultRenderer extends Component {
 				baseResult.dpsMetrics.stdev,
 				false,
 			);
-			formatDeltaTextElem(dpsDeltaRef.value, baseResult.dpsMetrics.avg, result.dpsMetrics.avg, 2, undefined, !isDiff, true);
+			const percentStr =
+				baseResult.dpsMetrics.avg > 0
+					? ` (${(((result.dpsMetrics.avg - baseResult.dpsMetrics.avg) / baseResult.dpsMetrics.avg) * 100).toFixed(2)}%)`
+					: '';
+			formatDeltaTextElem(dpsDeltaRef.value, baseResult.dpsMetrics.avg, result.dpsMetrics.avg, 2, undefined, !isDiff, false);
+			dpsDeltaRef.value.textContent += percentStr;
 		}
 
 		equipButtonRef.value?.addEventListener('click', () => {
